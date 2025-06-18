@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import {logger} from './utils/logger/index.js';
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -19,5 +20,5 @@ app.use(
 );
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    logger.log('info', `Server is running on port ${PORT}`);
 });

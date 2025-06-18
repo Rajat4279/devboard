@@ -46,7 +46,7 @@ model Task {
 }
 
 model Collaborator {
-  iid       String   @id @default(uuid())
+  id        String   @id @default(uuid())
   userId    String
   projectId String
   role      String   @default("member")
