@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 import { logger } from './utils/logger/index.js';
 import authRoutes from './routes/auth.route.js';
 
@@ -13,6 +14,7 @@ dotenv.config({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(
     cors({
         origin: '*',
