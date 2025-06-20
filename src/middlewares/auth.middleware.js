@@ -2,6 +2,11 @@ import jwt from 'jsonwebtoken';
 import prisma from '../../prisma/client.js';
 import ApiError from '../lib/api-error.js';
 import { logger } from '../utils/logger/index.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export const isLoggedIn = async (req, res, next) => {
     try {
@@ -44,7 +49,7 @@ export const isLoggedIn = async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
-        logger.error('Internal server error during authentication');
+        logger.error(`Internal server error during authentication {Location: ${__dirname + __filename}}`);
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));
@@ -69,7 +74,7 @@ export const apiKeyRequired = (req, res, next) => {
 
         next();
     } catch (error) {
-        logger.error('Internal server error during api key validation');
+        logger.error(`Internal server error during api key validation {Location: ${__dirname + __filename}}`);
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));

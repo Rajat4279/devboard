@@ -2,7 +2,11 @@ import { projectValidator } from '../utils/validators/project.validator.js';
 import ApiResponse from '../lib/api-response.js';
 import ApiError from '../lib/api-error.js';
 import { logger } from '../utils/logger/index.js';
-import { includes } from 'zod/v4';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export const createProject = async (req, res) => {
     try {
@@ -41,7 +45,9 @@ export const createProject = async (req, res) => {
                 new ApiResponse(201, 'Project created successfully', newProject)
             );
     } catch (error) {
-        logger.error('Internal server error during login');
+        logger.error(
+            `Internal server error while creating project {Location: ${__dirname + __filename}}`
+        );
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));
@@ -52,14 +58,14 @@ export const getAllProjects = async (req, res) => {
     try {
         const projects = await prisma.project.findMany({
             include: {
-            owner: {
-                select: {
-                name: true,
-                email: true,
-                gender: true,
-                image: true,
+                owner: {
+                    select: {
+                        name: true,
+                        email: true,
+                        gender: true,
+                        image: true,
+                    },
                 },
-            },
             },
         });
 
@@ -73,7 +79,9 @@ export const getAllProjects = async (req, res) => {
                 new ApiResponse(200, 'Projects fetched successfully', projects)
             );
     } catch (error) {
-        logger.error('Internal server error while fetching projects');
+        logger.error(
+            `Internal server error while fetching projects {Location: ${__dirname + __filename}}`
+        );
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));
@@ -93,12 +101,12 @@ export const getProjectById = async (req, res) => {
             where: { id: projectId },
             include: {
                 owner: {
-                    select:{
+                    select: {
                         name: true,
                         email: true,
                         gender: true,
                         image: true,
-                    }
+                    },
                 },
             },
         });
@@ -113,7 +121,9 @@ export const getProjectById = async (req, res) => {
                 new ApiResponse(200, 'Project fetched successfully', project)
             );
     } catch (error) {
-        logger.error('Internal server error while fetching project');
+        logger.error(
+            `Internal server error while fetching project {Location: ${__dirname + __filename}}`
+        );
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));
@@ -130,11 +140,10 @@ export const updateProjectById = async (req, res) => {
                 .json(new ApiError(400, 'Project ID is required'));
         }
 
-
         const updatedProject = await prisma.project.update({
             where: { id: projectId },
             data: {
-                ...req.body
+                ...req.body,
             },
         });
 
@@ -152,7 +161,9 @@ export const updateProjectById = async (req, res) => {
                 )
             );
     } catch (error) {
-        logger.error('Internal server error while fetching project');
+        logger.error(
+            `Internal server error while fetching project {Location: ${__dirname + __filename}}`
+        );
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));
@@ -187,7 +198,9 @@ export const deleteProjectById = async (req, res) => {
                 )
             );
     } catch (error) {
-        logger.error('Internal server error while deleting project');
+        logger.error(
+            `Internal server error while deleting project {Location: ${__dirname + __filename}}`
+        );
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));

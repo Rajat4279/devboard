@@ -10,6 +10,11 @@ import ApiError from '../lib/api-error.js';
 import { logger } from '../utils/logger/index.js';
 import { generateJwtToken } from '../lib/generate-jwt-token.js';
 import crypto from 'crypto';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export const register = async (req, res) => {
     try {
@@ -111,7 +116,9 @@ export const register = async (req, res) => {
             .status(201)
             .json(new ApiResponse(201, 'User registered successfully', user));
     } catch (error) {
-        logger.error('Internal server error during registration');
+        logger.error(
+            `Internal server error during registration {Location: ${__dirname + __filename}}`
+        );
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));
@@ -191,7 +198,7 @@ export const login = async (req, res) => {
             .status(200)
             .json(new ApiResponse(200, 'User logged in successfully', user));
     } catch (error) {
-        logger.error('Internal server error during login');
+        logger.error(`Internal server error during login {Location: ${__dirname + __filename}}`);
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));
@@ -234,6 +241,9 @@ export const generateApiKey = async (req, res) => {
                 )
             );
     } catch (error) {
+        logger.error(
+            `Internal server error during API key generation {Location: ${__dirname + __filename}}`
+        );
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));
@@ -261,7 +271,7 @@ export const getMe = async (req, res) => {
             .status(200)
             .json(new ApiResponse(200, 'User fetched successfully', user));
     } catch (error) {
-        logger.error('Internal server error while fetching user');
+        logger.error(`Internal server error while fetching user  {Location: ${__dirname+__filename}}`);
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));
@@ -297,7 +307,7 @@ export const logout = async (req, res) => {
             .status(200)
             .json(new ApiResponse(200, 'User logged out successfully'));
     } catch (error) {
-        logger.error('Internal server error during logout');
+        logger.error(`Internal server error during logout  {Location: ${__dirname+__filename}}`);
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));
@@ -379,7 +389,9 @@ export const generateRefereshToken = async (req, res) => {
             .status(200)
             .json(new ApiResponse(200, 'Tokens generated successfully', user));
     } catch (error) {
-        logger.error('Internal server error during token generation');
+        logger.error(
+            `Internal server error during token generation  {Location: ${__dirname + __filename}}`
+        );
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));
