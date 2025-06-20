@@ -16,7 +16,7 @@ export const register = async (req, res) => {
         const result = registerValidator.safeParse(req.body);
         if (!result.success) {
             const errors = {};
-            error.issues.forEach((issue) => {
+            result.error.issues.forEach((issue) => {
                 errors[issue.path.join('.')] = issue.message;
             });
             return res
@@ -123,7 +123,7 @@ export const login = async (req, res) => {
 
         if (!result.success) {
             const errors = {};
-            error.issues.forEach((issue) => {
+            result.error.issues.forEach((issue) => {
                 errors[issue.path.join('.')] = issue.message;
             });
             return res
@@ -261,6 +261,7 @@ export const getMe = async (req, res) => {
             .status(200)
             .json(new ApiResponse(200, 'User fetched successfully', user));
     } catch (error) {
+        logger.error('Internal server error while fetching user');
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));

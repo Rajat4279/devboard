@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import { logger } from './utils/logger/index.js';
 import authRoutes from './routes/auth.route.js';
+import projectRoutes from './routes/project.route.js';
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -28,7 +29,8 @@ app.get('/', (req, res) => {
     });
 });
 
-app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1', authRoutes);
+app.use('/api/v1', projectRoutes);
 
 app.listen(PORT, () => {
     logger.log('info', `Server is running on port ${PORT}`);

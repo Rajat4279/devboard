@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import prisma from '../../prisma/client.js';
 import ApiError from '../lib/api-error.js';
+import { logger } from '../utils/logger/index.js';
 
 export const isLoggedIn = async (req, res, next) => {
     try {
@@ -43,7 +44,7 @@ export const isLoggedIn = async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
-        logger.error('Internal server error during registration');
+        logger.error('Internal server error during authentication');
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));
@@ -60,7 +61,7 @@ export const apiKeyRequired = (req, res, next) => {
                 .json(new ApiError(401, 'API key is required for this route.'));
         }
 
-        if (user.apiKey !== apiKey) {
+        if (req.user.apiKey !== apiKey) {
             return res
                 .status(403)
                 .json(new ApiError(403, 'Forbidden: Invalid API key.'));
@@ -68,7 +69,7 @@ export const apiKeyRequired = (req, res, next) => {
 
         next();
     } catch (error) {
-        logger.error('Internal server error during registration');
+        logger.error('Internal server error during api key validation');
         return res
             .status(500)
             .json(new ApiError(500, 'Internal server error', error.message));
