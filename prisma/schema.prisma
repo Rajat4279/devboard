@@ -33,7 +33,7 @@ model Project {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   collaborators Collaborator[]
-  owner         User           @relation("OwnerProjects", fields: [ownerId], references: [id])
+  owner         User           @relation("OwnerProjects", fields: [ownerId], references: [id], onDelete: Cascade)
   tasks         Task[]
 }
 
@@ -47,19 +47,19 @@ model Task {
   updatedAt    DateTime   @updatedAt
   assignedById String
   status       TaskStatus @default(pending)
-  assignedBy   User       @relation("AssignedBy", fields: [assignedById], references: [id])
-  assignedTo   User       @relation("AssignedTasks", fields: [assignedToId], references: [id])
-  project      Project    @relation(fields: [projectId], references: [id])
+  assignedBy   User       @relation("AssignedBy", fields: [assignedById], references: [id], onDelete: Cascade)
+  assignedTo   User       @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: Cascade)
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model Collaborator {
   userId    String
   projectId String
-  role      String   @default("member")
   joinedAt  DateTime @default(now())
   id        String   @id @default(uuid())
-  project   Project  @relation(fields: [projectId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  role      UserRole @default(member)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, projectId])
 }
@@ -69,4 +69,9 @@ enum TaskStatus {
   in_progress
   completed
   cancelled
+}
+
+enum UserRole {
+  admin
+  member
 }

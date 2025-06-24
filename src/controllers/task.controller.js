@@ -5,6 +5,7 @@ import ApiError from '../lib/api-error.js';
 import { logger } from '../utils/logger/index.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { id } from 'zod/v4/locales';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -22,8 +23,10 @@ export const createTask = async (req, res) => {
                 .json(new ApiError(400, 'Validation error', errors));
         }
 
-        const { title, description, status, projectId, assignedToId } =
+        const { title, description, status, assignedToId } =
             result.data;
+        
+        const projectId = req.params.projectId;
 
         // check if the assignedToId is exists in the db for that project
         const project = await prisma.project.findUnique({
@@ -32,14 +35,20 @@ export const createTask = async (req, res) => {
                 collaborators: true,
             },
         });
+
         if (!project) {
             return res.status(404).json(new ApiError(404, 'Project not found'));
         }
 
-        const isMember = project.collaborators.some(
+        let isMember = project.collaborators.some(
             (member) => member.userId === assignedToId
         );
-        if (!isMember || assignedToId != req.user.id) {
+
+
+
+        isMember = isMember ||( assignedToId == req.user.id);
+
+        if (!isMember ) {
             return res
                 .status(400)
                 .json(
@@ -83,10 +92,30 @@ export const createTask = async (req, res) => {
 export const getAllTasks = async (req, res) => {
     try {
         const tasks = await prisma.task.findMany({
-            include: {
+            select: {
+                id: true,
                 project: true,
-                assignedTo: true,
-                assignedBy: true,
+                title: true,
+                description: true,
+                status: true,
+                assignedTo: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true,
+                        gender: true,
+                    },
+                },
+                assignedBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true,
+                        gender: true,
+                    },
+                },
             },
         });
 
@@ -112,11 +141,31 @@ export const getTaskById = async (req, res) => {
         const { id } = req.params;
 
         const task = await prisma.task.findUnique({
-            where: { id: parseInt(id) },
-            include: {
+            where: { id },
+            select: {
+                id: true,
                 project: true,
-                assignedTo: true,
-                assignedBy: true,
+                title: true,
+                description: true,
+                status: true,
+                assignedTo: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true,
+                        gender: true,
+                    },
+                },
+                assignedBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true,
+                        gender: true,
+                    },
+                },
             },
         });
 
@@ -155,7 +204,7 @@ export const updateTask = async (req, res) => {
             result.data;
 
         const task = await prisma.task.update({
-            where: { id: parseInt(id) },
+            where: { id },
             data: {
                 title,
                 description,
@@ -163,10 +212,30 @@ export const updateTask = async (req, res) => {
                 projectId,
                 assignedToId,
             },
-            include: {
+            select: {
+                id: true,
                 project: true,
-                assignedTo: true,
-                assignedBy: true,
+                title: true,
+                description: true,
+                status: true,
+                assignedTo: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true,
+                        gender: true,
+                    },
+                },
+                assignedBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true,
+                        gender: true,
+                    },
+                },
             },
         });
 
@@ -191,7 +260,7 @@ export const deleteTask = async (req, res) => {
         const { id } = req.params;
 
         const task = await prisma.task.delete({
-            where: { id: parseInt(id) },
+            where: { id },
         });
 
         if (!task) {

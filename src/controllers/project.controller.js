@@ -4,6 +4,8 @@ import ApiError from '../lib/api-error.js';
 import { logger } from '../utils/logger/index.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { ta } from 'zod/v4/locales';
+import { title } from 'process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -99,13 +101,54 @@ export const getProjectById = async (req, res) => {
         }
         const project = await prisma.project.findUnique({
             where: { id: projectId },
-            include: {
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                createdAt: true,
+                updatedAt: true,
                 owner: {
                     select: {
                         name: true,
                         email: true,
                         gender: true,
                         image: true,
+                    },
+                },
+                collaborators: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                            },
+                        },
+                    },
+                },
+                tasks: {
+                    select: {
+                        id: true,
+                        projectId: true,
+                        status: true,
+                        title: true,
+                        description: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        assignedTo: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                            },
+                        },
+                        assignedBy: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                            },
+                        },
                     },
                 },
             },
@@ -140,10 +183,20 @@ export const updateProjectById = async (req, res) => {
                 .json(new ApiError(400, 'Project ID is required'));
         }
 
+        let updateBody = {};
+
+        if (req.body.name) {
+            updateBody.name = req.body.name;
+        }
+
+        if (req.body.description) {
+            updateBody.description = req.body.description;
+        }
+
         const updatedProject = await prisma.project.update({
             where: { id: projectId },
             data: {
-                ...req.body,
+                ...updateBody,
             },
         });
 

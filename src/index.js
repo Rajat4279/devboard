@@ -6,6 +6,7 @@ import { logger } from './utils/logger/index.js';
 import authRoutes from './routes/auth.route.js';
 import projectRoutes from './routes/project.route.js';
 import taskRoutes from './routes/task.route.js';
+import collaboratorRoutes from './routes/collaborator.route.js';
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -33,6 +34,7 @@ app.get('/', (req, res) => {
 app.use('/api/v1', authRoutes);
 app.use('/api/v1', projectRoutes);
 app.use('/api/v1', taskRoutes);
+app.use('/api/v1', collaboratorRoutes);
 
 app.listen(PORT, () => {
     logger.log('info', `Server is running on port ${PORT}`);
