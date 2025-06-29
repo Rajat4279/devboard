@@ -94,6 +94,8 @@ All routes are prefixed with `/api/v1`.
 3.  **Include API Key**: Include the API key in the `x-api-key` header for all subsequent requests.
 4.  **Manage Resources**: Use the projects, tasks, and collaborators endpoints to manage your project data.
 
+**Note**: You can not send more than 10 API Requests in a minute.
+
 ## For your reference
 
 [Postman link](https://www.postman.com/joint-operations-geoscientist-84680570/workspace/public-workspace/collection/25450374-d36c4257-207a-4335-9ebe-0f2cf10298bd?action=share&creator=25450374)
